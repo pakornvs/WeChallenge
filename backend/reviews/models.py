@@ -10,6 +10,9 @@ class Review(models.Model):
     updated = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField("reviews.Tag", related_name="reviews", editable=False)
 
+    class Meta:
+        ordering = ["id"]
+
 
 class Tag(models.Model):
     name = models.TextField(unique=True)
