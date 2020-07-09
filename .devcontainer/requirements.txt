@@ -1,0 +1,5 @@
+coverage
+Django
+djangorestframework
+psycopg2
+celery

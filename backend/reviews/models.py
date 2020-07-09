@@ -1,7 +1,8 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django_q.tasks import async_task
+
+from backend.reviews.tasks import autotag_review
 
 
 class Review(models.Model):
@@ -21,4 +22,4 @@ class Tag(models.Model):
 
 @receiver(post_save, sender=Review)
 def post_save_review_receiver(sender, instance, **kwargs):
-    async_task("backend.reviews.tasks.autotag_review", instance)
+    autotag_review.delay(review_id=instance.id)

@@ -6,12 +6,6 @@ from backend.reviews.models import Review, Tag
 from backend.reviews.serializers import ReviewSerializer, TagSerializer
 
 
-class TagListView(ListAPIView):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    permission_classes = (AllowAny,)
-
-
 class ReviewListView(ListAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
@@ -23,3 +17,10 @@ class ReviewDetailUpdateView(RetrieveUpdateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = (AllowAny,)
+
+
+class TagListView(ListAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = (AllowAny,)
+

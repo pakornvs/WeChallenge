@@ -24,10 +24,11 @@
   "extensions": [
     "esbenp.prettier-vscode",
     "ms-python.python",
+    "ms-python.vscode-pylance",
     "redhat.vscode-yaml",
     "visualstudioexptteam.vscodeintellicode"
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "pip install --user -r requirements.txt"
+  "postCreateCommand": "pip install --user -r .devcontainer/requirements.txt"
 }
