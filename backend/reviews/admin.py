@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from backend.reviews.models import Review, Tag
+from .models import Review, Tag
 
 
 admin.site.register(Review)

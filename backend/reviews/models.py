@@ -1,8 +1,4 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-from backend.reviews.tasks import autotag_review
 
 
 class Review(models.Model):
@@ -14,12 +10,16 @@ class Review(models.Model):
     class Meta:
         ordering = ["id"]
 
+    def __str__(self):
+        return self.id
+
 
 class Tag(models.Model):
     name = models.TextField(unique=True)
     searchable = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ["id"]
 
-@receiver(post_save, sender=Review)
-def post_save_review_receiver(sender, instance, **kwargs):
-    autotag_review.delay(review_id=instance.id)
+    def __str__(self):
+        return self.name

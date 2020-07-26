@@ -1,5 +1,4 @@
 celery
-coverage
 Django
 djangorestframework
 gunicorn

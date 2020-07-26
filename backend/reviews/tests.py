@@ -1,9 +1,9 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
-from backend.reviews.models import Review, Tag
-from backend.reviews.tasks import autotag_review
-from backend.reviews.views import ReviewListView
+from .models import Review, Tag
+from .tasks import autotag_review
+from .views import ReviewSearchView
 
 factory = APIRequestFactory()
 
@@ -20,7 +20,7 @@ class ReviewListViewTest(TestCase):
             autotag_review(review)
 
     def test_search(self):
-        view = ReviewListView.as_view()
+        view = ReviewSearchView.as_view()
         request = factory.get("/", {"query": self.search_keyword})
         response = view(request)
         results = response.data["results"]

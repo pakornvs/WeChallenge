@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx
+    ports:
+      - 5555:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - tmp:/tmp
+    depends_on:
+      - app
+      - celery
+
+  app:
+    build: .
+    image: wechallenge
+    command: gunicorn backend.wsgi:application -b unix:/tmp/gunicorn.sock
+    env_file: .env-sample
+    volumes:
+      - tmp:/tmp
+
+  celery:
+    image: wechallenge
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py loaddata tags.json &&
+             python manage.py loaddata reviews.json &&
+             celery -A backend purge -f &&
+             celery worker -A backend -l info"
+    env_file: .env-sample
+    restart: on-failure
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  postgres:
+    image: postgres
+    env_file: .env-sample
+
+  rabbitmq:
+    image: rabbitmq
+    env_file: .env-sample
+
+volumes:
+  tmp:

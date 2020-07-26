@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backend.reviews.models import Review, Tag
+from .models import Review, Tag
 
 
 class ReviewSerializer(serializers.ModelSerializer):
