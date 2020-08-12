@@ -1,14 +1,19 @@
+FROM node:12
+
+WORKDIR /nodebuild
+copy frontend /nodebuild
+RUN npm install && npm run build
+
 FROM python:3.7
 
 ARG USERNAME=app
 ARG APPDIR=/app
 
-COPY requirements.txt /tmp/pip-tmp/
-RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
-   && rm -rf /tmp/pip-tmp
-
 WORKDIR $APPDIR
-COPY . $APPDIR
+COPY --from=0 /nodebuild/build $APPDIR/build
+COPY backend $APPDIR
+
+RUN pip --disable-pip-version-check --no-cache-dir install -r requirements.txt
 
 RUN useradd $USERNAME && chown -R $USERNAME $APPDIR
 

@@ -1,12 +1,9 @@
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny
 
 from .models import Review, Tag
 from .serializers import ReviewSerializer, TagSerializer
-from .tasks import autotag_review
 
 
 class ReviewDetailUpdateView(RetrieveUpdateAPIView):
@@ -20,23 +17,19 @@ class ReviewSearchView(ListAPIView):
     serializer_class = ReviewSerializer
     permission_classes = (AllowAny,)
 
-    def filter_queryset(self, queryset):
-        search_term = self.request.query_params.get("query", None)
-        if search_term is not None:
-            return queryset.filter(
-                tags__searchable=True, tags__name__iexact=search_term
-            )
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"search_term": self.search_term})
+        return context
 
-        return queryset.none()
+    def filter_queryset(self, queryset):
+        self.search_term = self.request.query_params.get("query", None)
+        if self.search_term:
+            queryset = queryset.filter(tags__name__iexact=self.search_term)
+        return queryset
 
 
 class TagListView(ListAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
-
-
-@receiver(post_save, sender=Review)
-def post_save_review_receiver(sender, instance, **kwargs):
-    autotag_review.delay(instance.id)
-

@@ -14,6 +14,13 @@ RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then \
         && chmod -R $USER_UID:$USER_GID /home/$USERNAME; \
     fi
 
+RUN apt-get update \
+    && export DEBIAN_FRONTEND=noninteractive \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+    && apt-get -y install --no-install-recommends nodejs \
+    && apt-get -y autoremove \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
 #

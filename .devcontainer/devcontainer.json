@@ -1,8 +1,8 @@
 {
-  "name": "Python 3 & PostgreSQL",
+  "name": "wechallenge",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/wechallenge",
 
   // Set *default* container specific settings.json values on container create.
   "settings": {

@@ -15,7 +15,7 @@ services:
   app:
     build: .
     image: wechallenge
-    command: gunicorn backend.wsgi:application -b unix:/tmp/gunicorn.sock
+    command: gunicorn wechallenge.wsgi:application -b unix:/tmp/gunicorn.sock
     env_file: .env-sample
     volumes:
       - tmp:/tmp
@@ -24,10 +24,10 @@ services:
     image: wechallenge
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py loaddata tags.json &&
-             python manage.py loaddata reviews.json &&
-             celery -A backend purge -f &&
-             celery worker -A backend -l info"
+             python manage.py loaddata tag.json &&
+             python manage.py loaddata review.json &&
+             celery -A wechallenge purge -f &&
+             celery worker -A wechallenge -l info"
     env_file: .env-sample
     restart: on-failure
     depends_on:

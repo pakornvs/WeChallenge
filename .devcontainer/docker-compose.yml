@@ -11,7 +11,7 @@ services:
         USER_UID: 1000
         USER_GID: 1000
     volumes:
-      - ..:/workspace:cached
+      - ..:/wechallenge:cached
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     depends_on:

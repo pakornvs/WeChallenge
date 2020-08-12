@@ -1,4 +1,0 @@
-[coverage:run]
-omit =
-   */site-packages/*
-   manage.py
