@@ -19,14 +19,15 @@ export class ReviewDetail extends React.PureComponent<
     this.setState({ id: data.id, content: data.content, status: "" });
   }
 
-  private handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  private handleContentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     this.setState({
       content: event.target.value,
     });
   };
 
-  private handleClick = async (event: React.FormEvent) => {
-    //event.preventDefault();
+  private handleUpdateClick = async () => {
     this.setState({ status: "Loading..." });
     const requestOptions = {
       method: "PUT",
@@ -55,7 +56,7 @@ export class ReviewDetail extends React.PureComponent<
             height: "50vh",
           }}
           value={content}
-          onChange={this.handleChange}
+          onChange={this.handleContentChange}
         />
         <button
           style={{
@@ -63,7 +64,7 @@ export class ReviewDetail extends React.PureComponent<
             marginLeft: "auto",
             marginRight: "auto",
           }}
-          onClick={this.handleClick}
+          onClick={this.handleUpdateClick}
         >
           Update
         </button>

@@ -4,8 +4,10 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import Review from "../interfaces/Review";
 
 interface State {
-  reviews: Review[];
   searchTerm: string;
+  reviews: Review[];
+  previous: string;
+  next: string;
   status: string;
 }
 
@@ -17,71 +19,107 @@ export class ReviewList extends React.PureComponent<
     super(props);
     const params = new URLSearchParams(this.props.location.search);
     this.state = {
-      reviews: [],
       searchTerm: params.get("query") || "",
+      reviews: [],
+      previous: "",
+      next: "",
       status: "",
     };
   }
 
   public async componentDidMount() {
-    this.getReviews();
+    this.getReviews(`?query=${this.state.searchTerm}`);
   }
 
-  private async getReviews() {
+  private async getReviews(query: string) {
     this.setState({
       status: "Loading...",
     });
-    const response = await fetch(
-      `/api/reviews/?query=${this.state.searchTerm}`
-    );
+    const response = await fetch(`/api/reviews/${query}`);
     if (response.status !== 200) {
       return this.setState({ status: "Something went wrong." });
     }
     const data = await response.json();
-    const reviews = data["results"];
     this.setState({
-      reviews: reviews,
-      status: reviews.length ? "" : "No reviews found.",
+      reviews: data["results"],
+      previous: data["previous"],
+      next: data["next"],
+      status: data["results"].length ? "" : "No reviews found.",
     });
   }
 
-  private handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  private handleSearchTermChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     this.setState({
       searchTerm: event.target.value,
     });
   };
 
+  private handlePreviousCLick = () => {
+    const { previous } = this.state;
+    if (previous) this.getReviews(new URL(previous).search);
+  };
+
+  private handleNextCLick = () => {
+    const { next } = this.state;
+    if (next) this.getReviews(new URL(next).search);
+  };
+
   public render() {
-    const { reviews, searchTerm, status } = this.state;
+    const { reviews, searchTerm, previous, next, status } = this.state;
     return (
       <div>
-        <form style={{ margin: "1em" }}>
+        <form style={{ margin: "2em" }}>
           <input
             name="query"
             placeholder="search..."
             value={searchTerm}
-            onChange={this.handleChange}
+            onChange={this.handleSearchTermChange}
           />
           <button type="submit">Search</button>
         </form>
         {status ? (
           <div>{status}</div>
         ) : (
-          <ul style={{ listStyleType: "decimal", textAlign: "left" }}>
+          <div
+            style={{ textAlign: "left", marginLeft: "4em", marginRight: "4em" }}
+          >
             {reviews.map((review: Review) => (
-              <Link key={review.id} to={`/reviews/${review.id}`}>
-                <li
-                  style={{ margin: "1em" }}
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(review.content, {
-                      ALLOWED_TAGS: ["keyword"],
-                    }),
-                  }}
-                />
-              </Link>
+              <div>
+                <h4>Review {review.id}</h4>
+                <Link to={`/reviews/${review.id}`}>
+                  <p
+                    style={{ marginBottom: "4em" }}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(review.content, {
+                        ALLOWED_TAGS: ["keyword"],
+                      }),
+                    }}
+                  />
+                </Link>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
+        {previous ? (
+          <button
+            name="prev"
+            style={{ margin: "1em" }}
+            onClick={this.handlePreviousCLick}
+          >
+            Previous
+          </button>
+        ) : null}
+        {next ? (
+          <button
+            name="prev"
+            style={{ margin: "1em" }}
+            onClick={this.handleNextCLick}
+          >
+            Next
+          </button>
+        ) : null}
       </div>
     );
   }
